@@ -1,0 +1,34 @@
+version: "3"
+services:
+  wordpress:
+    image: wordpress
+    ports:
+      - "8089:80"
+    depends_on:
+      - mysql
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: "coffee"
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      ohyeah:
+        ipv4_address: "10.56.1.21"
+  mysql:
+    image: "mysql:5.7"
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_ROOT_PASSWORD: "coffee"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      ohyeah:
+        ipv4_address: "10.56.1.20"
+volumes:
+  mysql_data:
+networks:
+  ohyeah:
+    ipam:
+      driver: default
+      config:
+        - subnet : "10.56.1.0/24"
