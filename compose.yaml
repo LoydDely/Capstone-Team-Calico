@@ -12,7 +12,7 @@ services:
     depends_on:
       - db
     volumes:
-      - ./mediawiki_data:/var/www/html/images
+      - images:/var/www/html/images
       - ./LocalSettings.php:/var/www/html/LocalSettings.php
 
   db:
@@ -23,10 +23,10 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: P@ssw0rd
       MYSQL_DATABASE: mediawiki
-      MYSQL_USER: wiki
+      MYSQL_USER: wikiuser
       MYSQL_PASSWORD: P@ssw0rd
     volumes:
-      - ./db_data:/var/lib/mysql
+      - db:/var/lib/mysql
 volumes:
-    database:
+    db:
     images:

@@ -102,14 +102,14 @@ $wgLocaltimezone = "UTC";
 ## be publicly accessible from the web.
 #$wgCacheDirectory = "$IP/cache";
 
-$wgSecretKey = "fb76c8c905a30a59b93a0fc05bca55aae7b27d1445a45ffe160b77b3c3fa5b29";
+$wgSecretKey = "9f69ef12125860180d27f5f0ab245d5b3bef6ed2834741415e03e9b028a1a937";
 
 # Changing this will log out all existing sessions.
 $wgAuthenticationTokenVersion = "1";
 
 # Site upgrade key. Must be set to a string (default provided) to turn on the
 # web installer while LocalSettings.php is in place
-$wgUpgradeKey = "757a13a5b7078e1a";
+$wgUpgradeKey = "0910545167767200";
 
 ## For attaching licensing metadata to pages, and displaying an
 ## appropriate copyright notice / icon. GNU Free Documentation
