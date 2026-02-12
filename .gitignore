@@ -16,7 +16,6 @@ auto.cnf
 # ----------------------
 # MediaWiki generated files
 # ----------------------
-LocalSettings.php
 cache/
 logs/
 
