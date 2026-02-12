@@ -1,0 +1,32 @@
+services:
+  mediawiki:
+    image: mediawiki:latest
+    container_name: mediawiki
+    ports:
+      - "8080:80"
+    environment:
+      MEDIAWIKI_DB_HOST: db
+      MEDIAWIKI_DB_USER: mediawiki
+      MEDIAWIKI_DB_PASSWORD: P@ssw0rd
+      MEDIAWIKI_DB_NAME: mediawiki
+    depends_on:
+      - db
+    volumes:
+      - ./mediawiki_data:/var/www/html/images
+      - ./LocalSettings.php:/var/www/html/LocalSettings.php
+
+  db:
+    image: mysql:5.7
+    container_name: mediawiki_db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: P@ssw0rd
+      MYSQL_DATABASE: mediawiki
+      MYSQL_USER: wiki
+      MYSQL_PASSWORD: P@ssw0rd
+    volumes:
+      - ./db_data:/var/lib/mysql
+volumes:
+    database:
+    images:

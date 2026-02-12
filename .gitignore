@@ -1,0 +1,38 @@
+# ----------------------
+# Docker / Database Data
+# ----------------------
+db_data/
+mediawiki_data/
+database/
+images/
+
+# MySQL files
+*.sock
+*.pid
+*.cnf
+ib*
+auto.cnf
+
+# ----------------------
+# MediaWiki generated files
+# ----------------------
+LocalSettings.php
+cache/
+logs/
+
+# ----------------------
+# OS Files
+# ----------------------
+.DS_Store
+Thumbs.db
+
+# ----------------------
+# IDE Files
+# ----------------------
+.vscode/
+.idea/
+
+# ----------------------
+# Logs
+# ----------------------
+*.log
