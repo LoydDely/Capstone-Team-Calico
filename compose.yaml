@@ -6,7 +6,7 @@ services:
       - "8080:80"
     environment:
       MEDIAWIKI_DB_HOST: db
-      MEDIAWIKI_DB_USER: mediawiki
+      MEDIAWIKI_DB_USER: wikiuser
       MEDIAWIKI_DB_PASSWORD: P@ssw0rd
       MEDIAWIKI_DB_NAME: mediawiki
     depends_on:
