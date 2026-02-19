@@ -1,4 +1,17 @@
 services:
+  db:
+    image: mysql:5.7
+    container_name: mediawiki_db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: P@ssw0rd
+      MYSQL_DATABASE: mediawiki
+      MYSQL_USER: wikiuser
+      MYSQL_PASSWORD: P@ssw0rd
+    volumes:
+      - db:/var/lib/mysql
+      
   mediawiki:
     image: mediawiki:latest
     container_name: mediawiki
@@ -14,19 +27,6 @@ services:
     volumes:
       - images:/var/www/html/images
       - ./LocalSettings.php:/var/www/html/LocalSettings.php
-
-  db:
-    image: mysql:5.7
-    container_name: mediawiki_db
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: P@ssw0rd
-      MYSQL_DATABASE: mediawiki
-      MYSQL_USER: wikiuser
-      MYSQL_PASSWORD: P@ssw0rd
-    volumes:
-      - db:/var/lib/mysql
 volumes:
     db:
     images:
