@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile.db
     container_name: mediawiki_db
     ports:
-      - "3306:3306"
+      - "3307:3307"
     environment:
       MYSQL_ROOT_PASSWORD: P@ssw0rd
       MYSQL_DATABASE: mediawiki
