@@ -36,9 +36,45 @@ services:
     networks:
       - appnet
 
+  matomo_db:
+    image: mariadb:11
+    container_name: matomo-db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: matomo
+      MARIADB_USER: matomo
+      MARIADB_PASSWORD: matomopass
+      MARIADB_ROOT_PASSWORD: rootpass
+    volumes:
+      - matomo_db:/var/lib/mysql
+    networks:
+      - appnet
+
+  matomo:
+    image: matomo:latest
+    container_name: matomo
+    restart: unless-stopped
+    depends_on:
+      - matomo_db
+    environment:
+      MATOMO_DATABASE_HOST: matomo_db
+      MATOMO_DATABASE_ADAPTER: mysql
+      MATOMO_DATABASE_TABLES_PREFIX: matomo_
+      MATOMO_DATABASE_USERNAME: matomo
+      MATOMO_DATABASE_PASSWORD: matomopass
+      MATOMO_DATABASE_DBNAME: matomo
+    ports:
+      - "8080:80"
+    volumes:
+      - matomo_data:/var/www/html
+    networks:
+      - appnet
+
 volumes:
   bookstack_db:
   bookstack_config:
+  matomo_db:
+  matomo_data:
 
 networks:
   appnet:
