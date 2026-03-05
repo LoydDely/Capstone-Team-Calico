@@ -36,9 +36,38 @@ services:
     networks:
       - appnet
 
+  umami_db:
+    image: postgres:15
+    container_name: umami-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: umamipass
+    volumes:
+      - umami_db:/var/lib/postgresql/data
+    networks:
+      - appnet
+
+  umami:
+    image: umamisoftware/umami:cloud-3119c14f
+    container_name: umami
+    restart: unless-stopped
+    depends_on:
+      - umami_db
+    environment:
+      DATABASE_URL: postgresql://umami:umamipass@umami_db:5432/umami
+      HASH_SALT: uwGITmMgReVwCiknzPCBOJJyj
+    ports:
+      - "3000:3000"
+    networks:
+      - appnet
+
+
 volumes:
   bookstack_db:
   bookstack_config:
+  umami_db:
 
 networks:
   appnet:
