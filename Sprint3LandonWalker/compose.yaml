@@ -1,0 +1,134 @@
+services:
+  bookstack_db:
+    image: mariadb:11
+    container_name: bookstack-db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: bookstack
+      MARIADB_USER: bookstack
+      MARIADB_PASSWORD: bookstackpass
+      MARIADB_ROOT_PASSWORD: rootpass
+    volumes:
+      - bookstack_db:/var/lib/mysql
+    networks:
+      - appnet
+
+  bookstack:
+    image: lscr.io/linuxserver/bookstack:latest
+    container_name: bookstack
+    restart: unless-stopped
+    depends_on:
+      - bookstack_db
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/New_York
+      APP_KEY: base64:fyM+ejkrb+xjVmHDEnqlwJoDgHm86eCtBIdHU871r5w=
+      APP_URL: http://bookstack.127.0.0.1.nip.io:8000
+      DB_HOST: bookstack_db
+      DB_DATABASE: bookstack
+      DB_USERNAME: bookstack
+      DB_PASSWORD: bookstackpass
+    ports:
+      - "8000:80"
+    volumes:
+      - bookstack_config:/config
+    networks:
+      - appnet
+
+  plausible_db:
+    image: postgres:15-alpine
+    container_name: plausible-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: plausible
+      POSTGRES_USER: plausible
+      POSTGRES_PASSWORD: plausible
+    volumes:
+      - plausible_db_data:/var/lib/postgresql/data
+    networks:
+      - appnet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U plausible -d plausible"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  plausible_events_db:
+    image: clickhouse/clickhouse-server:24.12-alpine
+    container_name: plausible-events-db
+    restart: always
+    volumes:
+      - event-data:/var/lib/clickhouse
+      - event-logs:/var/log/clickhouse-server
+      - ./clickhouse/logs.xml:/etc/clickhouse-server/config.d/logs.xml:ro
+      - ./clickhouse/ipv4-only.xml:/etc/clickhouse-server/config.d/ipv4-only.xml:ro
+      - ./clickhouse/low-resources.xml:/etc/clickhouse-server/config.d/low-resources.xml:ro
+      - ./clickhouse/default-profile-low-resources-overrides.xml:/etc/clickhouse-server/users.d/default-profile-low-resources-overrides.xml:ro
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    environment:
+      - CLICKHOUSE_SKIP_USER_SETUP=1
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 -O - http://127.0.0.1:8123/ping || exit 1",
+        ]
+      start_period: 1m
+    networks:
+      - appnet
+
+  plausible_migrate:
+    image: plausible/community-edition:latest
+    container_name: plausible-migrate
+    restart: "no"
+    depends_on:
+      plausible_db:
+        condition: service_healthy
+      plausible_events_db:
+        condition: service_healthy
+    command: sh -c "/entrypoint.sh db createdb && /entrypoint.sh db migrate"
+    environment:
+      BASE_URL: http://localhost:8001
+      SECRET_KEY_BASE: "u/mFdQEc/Ihq2WRXvpvCPijwTNnwMrA3QxS+86+4EtXnJp+NPunKvq+lnbkLiUV9"
+      DATABASE_URL: postgres://plausible:plausible@plausible_db:5432/plausible
+      CLICKHOUSE_DATABASE_URL: http://plausible_events_db:8123/plausible_events
+      DISABLE_REGISTRATION: "true"
+      MAILER_EMAIL: no-reply@localhost
+    networks:
+      - appnet
+
+  plausible:
+    image: plausible/community-edition:latest
+    container_name: plausible
+    restart: unless-stopped
+    depends_on:
+      plausible_migrate:
+        condition: service_completed_successfully
+    ports:
+      - "8001:8000"
+    environment:
+      BASE_URL: http://localhost:8001
+      SECRET_KEY_BASE: "u/mFdQEc/Ihq2WRXvpvCPijwTNnwMrA3QxS+86+4EtXnJp+NPunKvq+lnbkLiUV9"
+      DATABASE_URL: postgres://plausible:plausible@plausible_db:5432/plausible
+      CLICKHOUSE_DATABASE_URL: http://plausible_events_db:8123/plausible_events
+      DISABLE_REGISTRATION: "true"
+      MAILER_EMAIL: no-reply@localhost
+    networks:
+      - appnet
+
+volumes:
+  bookstack_db:
+  bookstack_config:
+  plausible_db_data:
+  plausible_events_data:
+  event-data:
+  event-logs:
+
+networks:
+  appnet:
+    driver: bridge
+
