@@ -44,7 +44,7 @@ services:
       - "9001:80"
     environment:
       COUNTLY_ADMIN_USER: admin
-      COUNTLY_ADMIN_PASS: admin123
+      COUNTLY_ADMIN_PASS: Admin123!
       COUNTLY_ADMIN_EMAIL: admin@example.com
     volumes:
       - countly_data:/var/lib/mongodb
