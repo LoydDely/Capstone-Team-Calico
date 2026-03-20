@@ -1,60 +1,61 @@
 version: "3.9"
 
 services:
-  wikijs-db:
-    image: postgres:15
-    container_name: wikijs-db
+  bookstack_db:
+    image: mariadb:11
+    container_name: bookstack-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: wiki
-      POSTGRES_USER: wikijs
-      POSTGRES_PASSWORD: wikijs123
+      MARIADB_DATABASE: bookstack
+      MARIADB_USER: bookstack
+      MARIADB_PASSWORD: bookstackpass
+      MARIADB_ROOT_PASSWORD: rootpass
     volumes:
-      - wikijs_db:/var/lib/postgresql/data
+      - bookstack_db:/var/lib/mysql
+    networks:
+      - appnet
 
-  wikijs:
-    image: requarks/wiki:latest
-    container_name: wikijs
+  bookstack:
+    image: lscr.io/linuxserver/bookstack:latest
+    container_name: bookstack
     restart: unless-stopped
     depends_on:
-      - wikijs-db
-    ports:
-      - "8080:3000"
+      - bookstack_db
     environment:
-      DB_TYPE: postgres
-      DB_HOST: wikijs-db
-      DB_PORT: 5432
-      DB_USER: wikijs
-      DB_PASS: wikijs123
-      DB_NAME: wiki
+      PUID: 1000
+      PGID: 1000
+      TZ: America/New_York
+      APP_KEY: base64:fyM+ejkrb+xjVmHDEnqlwJoDgHm86eCtBIdHU871r5w=
+      APP_URL: http://localhost:8000
+      DB_HOST: bookstack_db
+      DB_DATABASE: bookstack
+      DB_USERNAME: bookstack
+      DB_PASSWORD: bookstackpass
+    ports:
+      - "8000:80"
     volumes:
-      - wikijs_data:/wiki/data
-
-  countly-db:
-    image: mongo:5
-    container_name: countly-db
-    restart: always
-    volumes:
-      - countly_db:/data/db
+      - bookstack_config:/config
+    networks:
+      - appnet
 
   countly:
     image: countly/countly-server
-    container_name: countly
-    restart: always
-    depends_on:
-      - countly-db
     ports:
-      - "9000:80"
+      - "9001:80"
     environment:
-      COUNTLY_MONGODB_HOST: countly-db
-      COUNTLY_MONGODB_PORT: 27017
-
-      # Countly admin login
-      COUNTLY_ADMIN_EMAIL: admin@countly.local
-      COUNTLY_ADMIN_USERNAME: countlyadmin
-      COUNTLY_ADMIN_PASSWORD: CountlyPass123!
+      COUNTLY_ADMIN_USER: admin
+      COUNTLY_ADMIN_PASS: admin123
+      COUNTLY_ADMIN_EMAIL: admin@example.com
+    volumes:
+      - countly_data:/var/lib/mongodb
+      - countly_logs:/var/log/countly
 
 volumes:
-  wikijs_db:
-  wikijs_data:
-  countly_db:
+  bookstack_db:
+  bookstack_config:
+  countly_data:
+  countly_logs:
+
+networks:
+  appnet:
+    driver: bridge
