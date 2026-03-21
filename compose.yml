@@ -1,0 +1,61 @@
+version: "3.9"
+
+services:
+  bookstack_db:
+    image: mariadb:11
+    container_name: bookstack-db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: bookstack
+      MARIADB_USER: bookstack
+      MARIADB_PASSWORD: bookstackpass
+      MARIADB_ROOT_PASSWORD: rootpass
+    volumes:
+      - bookstack_db:/var/lib/mysql
+    networks:
+      - appnet
+
+  bookstack:
+    image: lscr.io/linuxserver/bookstack:latest
+    container_name: bookstack
+    restart: unless-stopped
+    depends_on:
+      - bookstack_db
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/New_York
+      APP_KEY: base64:fyM+ejkrb+xjVmHDEnqlwJoDgHm86eCtBIdHU871r5w=
+      APP_URL: http://localhost:8000
+      DB_HOST: bookstack_db
+      DB_DATABASE: bookstack
+      DB_USERNAME: bookstack
+      DB_PASSWORD: bookstackpass
+    ports:
+      - "8000:80"
+    volumes:
+      - bookstack_config:/config
+    networks:
+      - appnet
+
+  countly:
+    image: countly/countly-server
+    ports:
+      - "9001:80"
+    environment:
+      COUNTLY_ADMIN_USER: admin
+      COUNTLY_ADMIN_PASS: Admin123!
+      COUNTLY_ADMIN_EMAIL: admin@example.com
+    volumes:
+      - countly_data:/var/lib/mongodb
+      - countly_logs:/var/log/countly
+
+volumes:
+  bookstack_db:
+  bookstack_config:
+  countly_data:
+  countly_logs:
+
+networks:
+  appnet:
+    driver: bridge
