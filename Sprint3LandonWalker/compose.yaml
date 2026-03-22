@@ -10,6 +10,7 @@ services:
       MARIADB_ROOT_PASSWORD: rootpass
     volumes:
       - bookstack_db:/var/lib/mysql
+      - ./bookstack_dump.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - appnet
 
