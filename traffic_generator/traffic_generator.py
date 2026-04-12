@@ -8,7 +8,6 @@ from selenium.webdriver.chrome.options import Options
 import random
 
 BOOKSTACK_URL = "http://bookstack:80"
-MATOMO_URL = "http://matomo:80"
 WAIT = 10
 DELAY = 5
 MIN_STAY = 2
@@ -60,40 +59,6 @@ def bookstackVisit(driver):
         print(f"Error visiting BookStack: {e}")
         return False
 
-def matomoVisit(driver):    
-    try:
-        driver.get(MATOMO_URL)
-        WebDriverWait(driver, WAIT).until(
-            ExpecCond.presence_of_all_elements_located((By.TAG_NAME, "body"))
-        )
-        stayTime = random.randint(MIN_STAY, MAX_STAY)
-        time.sleep(stayTime)
-        try:
-            links = driver.find_elements(By.TAG_NAME, "a")
-            cLinks = [link for link in links if link.get_attribute("href") and 
-                             (link.get_attribute("href").startswith("http://matomo") or 
-                              link.get_attribute("href").startswith("/"))]
-            if cLinks:
-                for _ in range(random.randint(1, 3)):
-                    try:
-                        rLink = random.choice(cLinks)
-                        href = rLink.get_attribute("href")
-                        driver.execute_script("arguments[0].scrollIntoView();", random_link)
-                        time.sleep(1)
-                        driver.execute_script("arguments[0].click();", random_link)
-                        WebDriverWait(driver, WAIT).until(
-                            ExpecCond.presence_of_all_elements_located((By.TAG_NAME, "body"))
-                        )
-                        stayTime = random.randint(MIN_STAY, MAX_STAY)
-                        time.sleep(stayTime)
-                    except Exception as e:
-                        break
-        except Exception as e:
-            print(f"Error during Matomo link navigation: {e}")
-        return True
-    except Exception as e:
-        print(f"Error visiting Matomo: {e}")
-        return False
 
 def traffic():
     driver = None
@@ -104,9 +69,7 @@ def traffic():
         while True:
             try:
                 bookstackVisit(driver)
-                time.sleep(DELAY)
-                matomoVisit(driver)
-                time.sleep(DELAY)   
+                time.sleep(DELAY) 
             except Exception as e:
                 time.sleep(DELAY)
     except Exception as e:
