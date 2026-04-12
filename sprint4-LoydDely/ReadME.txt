@@ -65,6 +65,7 @@ Copy this Script
 </script>
 <!-- End Matomo Code -->
 
+
 Go back to Bookstack settings
 Go to Customization
 Insert copied script into Custom HTML Head Content spot
