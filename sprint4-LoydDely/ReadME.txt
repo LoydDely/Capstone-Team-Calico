@@ -35,7 +35,19 @@ Website URL - https://localhost:8000
 Timezone - Newyork
 Hit Next
 
-Copy the following Script
+Copy the Script
+
+Go to Bookstack settings
+Go to Customization
+Insert copied script into Custom HTML Head Content spot
+Save Settings
+
+Go back to Matomo
+Hit Next
+
+Hit continue to Matomo
+
+Copy this Script
 
 <!-- Matomo -->
 <script>
@@ -53,16 +65,13 @@ Copy the following Script
 </script>
 <!-- End Matomo Code -->
 
-
-Got to Bookstack settings
+Go back to Bookstack settings
 Go to Customization
 Insert copied script into Custom HTML Head Content spot
 Save Settings
 
 Go back to Matomo
-Hit Next
 
-Hit continue to Matomo
 
 
 
