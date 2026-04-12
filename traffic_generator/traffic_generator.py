@@ -42,9 +42,9 @@ def bookstackVisit(driver):
                     try:
                         rLink = random.choice(cLinks)
                         href = rLink.get_attribute("href")
-                        driver.execute_script("arguments[0].scrollIntoView();", random_link)
+                        driver.execute_script("arguments[0].scrollIntoView();", rLink)
                         time.sleep(1)
-                        driver.execute_script("arguments[0].click();", random_link)
+                        driver.execute_script("arguments[0].click();", rLink)
                         WebDriverWait(driver, WAIT).until(
                             ExpecCond.presence_of_all_elements_located((By.TAG_NAME, "body"))
                         )
