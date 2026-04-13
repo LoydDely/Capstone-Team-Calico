@@ -1,0 +1,42 @@
+<details>
+<summary>Click to view System Check</summary>
+
+### Mandatory checks
+
+#### PHP version >= 7.2.5:
+ ✔ 8.4.18
+
+#### PDO extension:
+ ✔ 
+
+#### PDO\MYSQL extension:
+ ✔ 
+
+#### MYSQLI extension:
+ ✔ 
+
+#### Other required extensions:
+ ✔ zlib ✔ json ✔ filter ✔ hash ✔ session
+
+#### Required functions:
+ ✔ debug_backtrace ✔ escapeshellarg ✔ eval ✔ hash ✔ gzcompress ✔ gzuncompress ✔ pack
+
+#### Required PHP configuration (php.ini):
+ ✔ session.auto_start = 0 ✔ max_execution_time = 0 OR = -1 OR >= 30
+
+#### Directories with write access:
+ ✔ $DOC_ROOT/tmp ✔ $DOC_ROOT/tmp/assets ✔ $DOC_ROOT/tmp/cache ✔ $DOC_ROOT/tmp/climulti ✔ $DOC_ROOT/tmp/latest ✔ $DOC_ROOT/tmp/logs ✔ $DOC_ROOT/tmp/logos ✔ $DOC_ROOT/tmp/sessions ✔ $DOC_ROOT/tmp/tcpdf ✔ $DOC_ROOT/tmp/templates_c ✔ $DOC_ROOT/config
+
+### Optional checks
+
+✔ (all optional checks passed)
+
+### Informational results
+
+Matomo Version: 5.7.1  
+PHP_OS: Linux  
+PHP SAPI: apache2handler  
+PHP Timezone: UTC  
+...
+
+</details>
