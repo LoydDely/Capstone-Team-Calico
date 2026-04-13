@@ -4,11 +4,16 @@ import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 SELENIUM_URL = "http://selenium:4444/wd/hub"
 BOOKSTACK_BASE_URL = "http://bookstack:80"
 MATOMO_URL = "http://matomo:80"
 MATOMO_SITE_ID = 1
+
+BOOKSTACK_EMAIL = "admin@admin.com"
+BOOKSTACK_PASSWORD = "password"
 
 PAGES = [
     "/",
@@ -36,7 +41,6 @@ def create_driver():
             print(f"Attempt {attempt + 1}/30: {type(e).__name__}")
             time.sleep(2)
     raise RuntimeError("Could not create Selenium WebDriver after 30 attempts.")
-
 
 def click_random_link(driver):
     try:
