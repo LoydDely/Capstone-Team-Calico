@@ -1,0 +1,119 @@
+services:
+  bookstack_db:
+    image: mariadb:11
+    container_name: bookstack-db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: bookstack
+      MARIADB_USER: bookstack
+      MARIADB_PASSWORD: bookstackpass
+      MARIADB_ROOT_PASSWORD: rootpass
+    volumes:
+      - bookstack_db_data:/var/lib/mysql
+    networks:
+      - appnet
+
+  bookstack:
+    image: lscr.io/linuxserver/bookstack:latest
+    container_name: bookstack
+    restart: unless-stopped
+    depends_on:
+      - bookstack_db
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/New_York
+      APP_KEY: base64:fyM+ejkrb+xjVmHDEnqlwJoDgHm86eCtBIdHU871r5w=
+      APP_URL: "http://bookstack"
+      DB_HOST: bookstack_db
+      DB_DATABASE: bookstack
+      DB_USERNAME: bookstack
+      DB_PASSWORD: bookstackpass
+    volumes:
+      - bookstack_config:/config
+    networks:
+      - appnet
+
+  matomo_db:
+    image: mariadb:11
+    container_name: matomo-db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: matomo
+      MARIADB_USER: matomo
+      MARIADB_PASSWORD: matomopass
+      MARIADB_ROOT_PASSWORD: rootpass
+    volumes:
+      - matomo_db_data:/var/lib/mysql
+    networks:
+      - appnet
+
+  matomo:
+    image: matomo:latest
+    container_name: matomo
+    restart: unless-stopped
+    depends_on:
+      - matomo_db
+    environment:
+      MATOMO_DATABASE_HOST: matomo_db
+      MATOMO_DATABASE_ADAPTER: mysql
+      MATOMO_DATABASE_TABLES_PREFIX: matomo_
+      MATOMO_DATABASE_USERNAME: matomo
+      MATOMO_DATABASE_PASSWORD: matomopass
+      MATOMO_DATABASE_DBNAME: matomo
+    volumes:
+      - matomo_data:/var/www/html
+    networks:
+      - appnet
+
+  selenium:
+    image: selenium/standalone-chromium:latest
+    container_name: selenium
+    restart: unless-stopped
+    shm_size: 2gb
+    ports:
+      - "4444:4444"
+    networks:
+      - appnet
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  traffic-generator:
+    build: ./traffic_generator
+    container_name: traffic-generator
+    depends_on:
+      selenium:
+        condition: service_healthy
+      bookstack:
+        condition: service_started
+      matomo:
+        condition: service_started
+    networks:
+      - appnet
+
+  proxy:
+    image: nginx:alpine
+    container_name: reverse-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - bookstack
+      - matomo
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge
+
+volumes:
+  bookstack_db_data:
+  bookstack_config:
+  matomo_db_data:
+  matomo_data:
